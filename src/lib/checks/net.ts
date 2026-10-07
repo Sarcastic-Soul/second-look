@@ -102,6 +102,33 @@ export interface DomainAge {
 
 const ageCache = new Map<string, DomainAge>();
 
+// IANA's list of which registry runs RDAP for each ending (.com, .info, ...). Asking the registry directly
+// works from cloud hosts, where the rdap.org redirector answers 403.
+let bootstrap: Promise<Map<string, string>> | null = null;
+function rdapServers(): Promise<Map<string, string>> {
+  bootstrap ??= fetch("https://data.iana.org/rdap/dns.json", { signal: AbortSignal.timeout(5_000) })
+    .then((r) => r.json() as Promise<{ services: [string[], string[]][] }>)
+    .then(({ services }) => {
+      const map = new Map<string, string>();
+      for (const [tlds, urls] of services) {
+        const url = urls.find((u) => u.startsWith("https://")) ?? urls[0];
+        for (const tld of tlds) map.set(tld.toLowerCase(), url.endsWith("/") ? url : `${url}/`);
+      }
+      return map;
+    })
+    .catch(() => {
+      bootstrap = null; // try again on the next lookup
+      return new Map<string, string>();
+    });
+  return bootstrap;
+}
+
+async function rdapUrl(domain: string): Promise<string> {
+  const tld = domain.split(".").pop()!.toLowerCase();
+  const base = (await rdapServers()).get(tld) ?? "https://rdap.org/";
+  return `${base}domain/${encodeURIComponent(domain)}`;
+}
+
 /** Registration date from RDAP (the modern, free replacement for WHOIS). */
 export async function domainAge(domain: string): Promise<DomainAge> {
   const cached = ageCache.get(domain);
@@ -110,7 +137,7 @@ export async function domainAge(domain: string): Promise<DomainAge> {
   const timer = setTimeout(() => ctrl.abort(), 6_000);
   let result: DomainAge;
   try {
-    const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`, {
+    const res = await fetch(await rdapUrl(domain), {
       signal: ctrl.signal,
       headers: { accept: "application/rdap+json, application/json" },
     });

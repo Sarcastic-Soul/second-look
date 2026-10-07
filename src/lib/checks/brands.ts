@@ -58,7 +58,7 @@ export const BRANDS: Brand[] = [
   { name: "Meta / Facebook", domains: ["facebook.com", "fb.com", "meta.com", "facebookmail.com"], keywords: ["facebook", "meta business"] },
   { name: "Instagram", domains: ["instagram.com"], keywords: ["instagram"] },
   { name: "WhatsApp", domains: ["whatsapp.com"], keywords: ["whatsapp"] },
-  { name: "Netflix", domains: ["netflix.com"], keywords: ["netflix"] },
+  { name: "Netflix", domains: ["netflix.com", "netflix.net", "nflxext.com", "nflximg.net"], keywords: ["netflix"] },
   { name: "LinkedIn", domains: ["linkedin.com"], keywords: ["linkedin"] },
   { name: "DocuSign", domains: ["docusign.com", "docusign.net"], keywords: ["docusign"] },
   { name: "Norton", domains: ["norton.com"], keywords: ["norton"] },

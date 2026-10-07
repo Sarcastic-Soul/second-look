@@ -38,18 +38,37 @@ function domainLabel(registrable: string): string {
 }
 
 /** A brand whose name is inside the domain's letters, or whose real domain is one or two typos away. */
-function impersonatedBrand(host: string): { brand: Brand; how: "name" | "typo" | "punycode" } | null {
+/**
+ * Help-desk and mailing services that host real companies on subdomains (netflix.zendesk.com), so a
+ * brand name in front of them is normal.
+ */
+const BRAND_SUBDOMAIN_HOSTS = new Set([
+  "zendesk.com", "freshdesk.com", "salesforce.com", "force.com", "atlassian.net", "hubspot.com",
+  "sendgrid.net", "list-manage.com", "mailchimp.com", "intercom.io", "helpscoutdocs.com",
+]);
+
+function brandInLabel(label: string): Brand | undefined {
+  const tokens = label.split(/[^a-z0-9]+/);
+  return BRANDS.find((brand) =>
+    brand.keywords.some((k) => {
+      const squashed = k.replace(/[^a-z0-9]/g, "");
+      // Short names like "ups" or "sbi" must be a whole token, or "groups-online.com" would match.
+      return squashed.length >= 4 ? label.replace(/-/g, "").includes(squashed) : tokens.includes(squashed);
+    }),
+  );
+}
+
+function impersonatedBrand(host: string): { brand: Brand; how: "name" | "subdomain" | "typo" | "punycode" } | null {
   const registrable = registrableDomain(host);
   if (!registrable || officialBrandFor(host)) return null;
   const label = domainLabel(registrable);
-  const tokens = label.split(/[^a-z0-9]+/);
-  for (const brand of BRANDS) {
-    for (const k of brand.keywords) {
-      const squashed = k.replace(/[^a-z0-9]/g, "");
-      // Short names like "ups" or "sbi" must be a whole token, or "groups-online.com" would match.
-      const hit = squashed.length >= 4 ? label.replace(/-/g, "").includes(squashed) : tokens.includes(squashed);
-      if (hit) return { brand, how: "name" };
-    }
+  const named = brandInLabel(label);
+  if (named) return { brand: named, how: "name" };
+  // amazon-in.order-cancel-desk.com: the brand is put in front so the address starts the way you expect.
+  const sub = parse(host).subdomain?.replace(/^www\.?/, "");
+  if (sub && !BRAND_SUBDOMAIN_HOSTS.has(registrable)) {
+    const inSub = brandInLabel(sub);
+    if (inSub) return { brand: inSub, how: "subdomain" };
   }
   for (const brand of BRANDS) {
     for (const d of brand.domains) {
@@ -129,6 +148,8 @@ function impersonationChecks(hosts: string[]): CheckResult[] {
     const detail =
       imp.how === "name"
         ? `${reg} uses ${imp.brand.name}'s name but is not one of ${imp.brand.name}'s websites (${imp.brand.domains.slice(0, 2).join(", ")}).`
+        : imp.how === "subdomain"
+          ? `${host} starts with ${imp.brand.name}'s name, but the website it really belongs to is ${reg}, not ${imp.brand.name} (${imp.brand.domains[0]}).`
         : imp.how === "typo"
           ? `${reg} looks almost the same as ${imp.brand.name}'s real site ${imp.brand.domains[0]}, but it is a different website.`
           : `${host} uses letters from other alphabets that look like normal letters, a common trick to copy real site names.`;
@@ -158,7 +179,10 @@ async function ageChecks(hosts: string[]): Promise<CheckResult[]> {
 
 function brandMismatchCheck(s: Suspect, hosts: string[]): CheckResult[] {
   if (hosts.length === 0) return [];
-  const mentioned = brandsMentioned(`${s.subject ?? ""}\n${s.sender?.name ?? ""}\n${s.text.slice(0, BODY_BRAND_WINDOW)}`).slice(0, 2);
+  // The brand the message claims to be from: named in the subject or sender, else the first one in the body.
+  // "Paid with your HDFC card" in an Amazon email shouldn't make HDFC links expected.
+  const claimed = brandsMentioned(`${s.subject ?? ""}\n${s.sender?.name ?? ""}`);
+  const mentioned = claimed.length ? claimed.slice(0, 2) : brandsMentioned(s.text.slice(0, BODY_BRAND_WINDOW)).slice(0, 1);
   return mentioned.map((brand): CheckResult => {
     const toBrand = hosts.filter((h) => isOfficialHost(brand, h));
     const id = `brand-links:${brand.name}`;
