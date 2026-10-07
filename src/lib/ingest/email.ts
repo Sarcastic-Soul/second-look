@@ -77,6 +77,25 @@ function collectImages(email: Email): ImageInput[] {
 }
 
 /**
+ * The suspicious email itself, with its own headers and signatures: an attachment to a forward, or a
+ * .eml file saved from a mail app.
+ */
+export async function suspectFromOriginalEmail(originalRaw: Uint8Array, extra: { agentboxdRisk?: number } = {}): Promise<Suspect> {
+  const inner = await PostalMime.parse(originalRaw);
+  return {
+    channel: "email-attachment",
+    sender: firstMailbox(inner.from),
+    replyTo: firstMailbox(inner.replyTo)?.address,
+    subject: inner.subject,
+    text: bodyText(inner),
+    html: inner.html,
+    images: [],
+    originalRaw,
+    ...extra,
+  };
+}
+
+/**
  * Turns the raw email that reached our inbox into the message the user is actually asking about:
  * the attached original, the forwarded block, or the email itself (pasted text / screenshot).
  */
@@ -84,21 +103,7 @@ export async function suspectFromRawEmail(raw: Uint8Array | string, extra: { age
   const outer = await PostalMime.parse(raw, { forceRfc822Attachments: true });
 
   const attached = outer.attachments.find((a) => a.mimeType.toLowerCase() === "message/rfc822");
-  if (attached) {
-    const originalRaw = toBytes(attached.content);
-    const inner = await PostalMime.parse(originalRaw);
-    return {
-      channel: "email-attachment",
-      sender: firstMailbox(inner.from),
-      replyTo: firstMailbox(inner.replyTo)?.address,
-      subject: inner.subject,
-      text: bodyText(inner),
-      html: inner.html,
-      images: [],
-      originalRaw,
-      ...extra,
-    };
-  }
+  if (attached) return suspectFromOriginalEmail(toBytes(attached.content), extra);
 
   const outerText = bodyText(outer);
   const fwd = parseForwardedText(outer.text ?? outerText);
