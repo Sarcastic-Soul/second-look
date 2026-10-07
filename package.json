@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
+    "@phosphor-icons/react": "^2.1.10",
     "agentboxd": "^0.3.0",
     "drizzle-orm": "^0.45.3",
     "mailauth": "^7.1.1",
+    "motion": "^14.0.0",
     "next": "16.4.0",
     "openai": "^7.30.0",
     "postal-mime": "^4.0.5",

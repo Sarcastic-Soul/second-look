@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+/* One accent (deep teal) on warm paper. Verdict colours are only used for verdicts and check results. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #f7f1e6;
+  --surface: #fffcf6;
+  --ink: #1d2422;
+  --ink-2: #4c5753;
+  --line: #e2d8c6;
+  --accent: #0f5e5a;
+  --on-accent: #f7f1e6;
+  --accent-soft: #dcebe7;
+  --band: #0f5e5a;
+  --on-band: #f7f1e6;
+  --frame: #10201e;
+  --scam: #b42318;
+  --scam-soft: #fbe9e6;
+  --warn: #8a5d00;
+  --warn-soft: #fbf0d9;
+  --ok: #1a7f37;
+  --ok-soft: #e3f3e6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #141a19;
+    --surface: #1b2321;
+    --ink: #ece6da;
+    --ink-2: #a9b3ae;
+    --line: #2e3836;
+    --accent: #7cc4ba;
+    --on-accent: #10201e;
+    --accent-soft: #1f3533;
+    --band: #12403d;
+    --on-band: #f1ebdf;
+    --frame: #050908;
+    --scam: #f2877b;
+    --scam-soft: #3a1f1c;
+    --warn: #e3b45a;
+    --warn-soft: #362c16;
+    --ok: #6cc58a;
+    --ok-soft: #1b3323;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-band: var(--band);
+  --color-on-band: var(--on-band);
+  --color-frame: var(--frame);
+  --color-scam: var(--scam);
+  --color-scam-soft: var(--scam-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-fraunces);
+}
+
+html {
+  color-scheme: light dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, sans-serif;
+  font-weight: 500;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }

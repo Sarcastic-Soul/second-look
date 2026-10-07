@@ -85,7 +85,7 @@ ${reportUrl ? `<p><a href="${esc(reportUrl)}" style="color:#0b5cad">See the full
   return { text, html };
 }
 
-function defangAnalysis(a: Analysis): Analysis {
+export function defangAnalysis(a: Analysis): Analysis {
   const ev = <T extends { title: string; explanation: string; quote?: string }>(e: T): T => ({
     ...e,
     title: defang(e.title),
