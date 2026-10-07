@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local design explorations
 /design-options
+
+# eval datasets (download steps in eval/README.md)
+/eval/data

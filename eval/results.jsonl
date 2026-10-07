@@ -1,0 +1,14 @@
+{"id":"sms-2875","label":"scam","mode":"checks-only","verdict":"safe","confidence":0.5,"failedChecks":[],"ms":3}
+{"id":"sms-2875","label":"scam","mode":"llm-only","verdict":"scam","confidence":1,"model":"gemini-3.5-flash-lite","ms":2119}
+{"id":"sms-2875","label":"scam","mode":"llm+checks","verdict":"scam","confidence":0.99,"model":"gemini-3.5-flash-lite","failedChecks":[],"ms":1834}
+{"id":"sms-2404","label":"scam","mode":"checks-only","verdict":"safe","confidence":0.5,"failedChecks":[],"ms":0}
+{"id":"sms-2404","label":"scam","mode":"llm-only","verdict":"suspicious","confidence":0.8,"model":"gemini-3.5-flash-lite","ms":1656}
+{"id":"sms-2404","label":"scam","mode":"llm+checks","verdict":"suspicious","confidence":0.6,"model":"gemini-3.5-flash-lite","failedChecks":[],"ms":1594}
+{"id":"sms-862","label":"scam","mode":"checks-only","verdict":"safe","confidence":0.5,"failedChecks":[],"ms":1}
+{"id":"sms-862","label":"scam","mode":"llm-only","verdict":"scam","confidence":1,"model":"gemini-3.5-flash-lite","ms":1656}
+{"id":"sms-862","label":"scam","mode":"llm+checks","verdict":"scam","confidence":1,"model":"gemini-3.5-flash-lite","failedChecks":[],"ms":1537}
+{"id":"sms-1514","label":"scam","mode":"checks-only","verdict":"safe","confidence":0.5,"failedChecks":[],"ms":2}
+{"id":"sms-1514","label":"scam","mode":"llm-only","verdict":"scam","confidence":1,"model":"gemini-3.5-flash-lite","ms":1735}
+{"id":"sms-1514","label":"scam","mode":"llm+checks","verdict":"scam","confidence":0.99,"model":"gemini-3.5-flash-lite","failedChecks":[],"ms":2066}
+{"id":"sms-798","label":"scam","mode":"checks-only","verdict":"safe","confidence":0.5,"failedChecks":[],"ms":0}
+{"id":"sms-798","label":"scam","mode":"llm-only","verdict":"scam","confidence":1,"model":"gemini-3.5-flash-lite","ms":1874}
