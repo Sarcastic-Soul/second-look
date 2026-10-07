@@ -16,7 +16,7 @@ const STATUS_MARK: Record<CheckStatus, string> = { pass: "OK", warn: "Warning", 
 const FOOTER =
   "Second Look is an automated helper and can be wrong. If money or passwords are involved, check with the company directly using a number or website you already trust.";
 
-function esc(s: string): string {
+export function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
@@ -43,7 +43,8 @@ export interface ReplyContent {
 
 const SAFE_NOTE = "Suspicious website names are written like example[.]com so they can't be clicked by accident.";
 
-export function renderVerdictReply(analysis: Analysis, reportUrl?: string): ReplyContent {
+/** `familyNote`: set when this reply's scam verdict also went to the person's trusted contact. */
+export function renderVerdictReply(analysis: Analysis, reportUrl?: string, familyNote?: string): ReplyContent {
   const a = defangAnalysis(analysis);
   const v = a.verdict;
   const style = VERDICT_STYLE[v.verdict];
@@ -58,6 +59,7 @@ export function renderVerdictReply(analysis: Analysis, reportUrl?: string): Repl
     v.goodSigns.length ? `\nGood signs:\n${v.goodSigns.map((g) => `- ${g.title}: ${g.explanation}`).join("\n")}` : "",
     v.nextSteps.length ? `\nWhat to do:\n${v.nextSteps.map((s) => `- ${s}`).join("\n")}` : "",
     shown.length ? `\nWhat we checked:\n${shown.map((c) => `- [${STATUS_MARK[c.status]}] ${c.detail}`).join("\n")}` : "",
+    familyNote ? `\n${familyNote}` : "",
     reportUrl ? `\nFull report: ${reportUrl}` : "",
     `\n--\n${SAFE_NOTE}\n${FOOTER}`,
   ]
@@ -78,6 +80,7 @@ ${v.redFlags.length ? heading("Why") + list(v.redFlags.map((f) => `<strong>${esc
 ${v.goodSigns.length ? heading("Good signs") + list(v.goodSigns.map((g) => `<strong>${esc(g.title)}.</strong> ${esc(g.explanation)}`)) : ""}
 ${v.nextSteps.length ? heading("What to do") + list(v.nextSteps.map(esc)) : ""}
 ${shown.length ? heading("What we checked") + list(shown.map((c) => `<span style="color:#57606a">[${STATUS_MARK[c.status]}]</span> ${esc(c.detail)}`)) : ""}
+${familyNote ? `<p>${esc(familyNote)}</p>` : ""}
 ${reportUrl ? `<p><a href="${esc(reportUrl)}" style="color:#0b5cad">See the full report</a></p>` : ""}
 <p style="margin-top:24px;border-top:1px solid #d0d7de;padding-top:12px;font-size:13px;color:#57606a">${esc(SAFE_NOTE)} ${esc(FOOTER)}</p>
 </div>`;

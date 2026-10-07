@@ -7,6 +7,7 @@ import {
   LinkIcon,
   SealCheckIcon,
   ShieldCheckIcon,
+  UsersThreeIcon,
 } from "@phosphor-icons/react/ssr";
 import { ChatDemo } from "@/components/chat-demo";
 import { CopyAddress } from "@/components/copy-address";
@@ -100,6 +101,24 @@ export default function Home() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="mb-20 grid grid-cols-1 items-center gap-6 rounded-[22px] bg-accent-soft px-5 py-8 md:rounded-[28px] md:px-12 md:py-10 lg:grid-cols-[auto_1fr_auto] lg:gap-10">
+          <UsersThreeIcon size={44} weight="duotone" className="text-accent" aria-hidden />
+          <div>
+            <h2 className="font-display text-[28px] leading-[1.1] font-bold md:text-[34px]">Looking out for a parent?</h2>
+            <p className="mt-2 max-w-[54ch] text-lg leading-relaxed text-ink-2">
+              They can add you as their trusted contact. When a message they forward is clearly a scam, you get a short
+              email too.
+            </p>
+          </div>
+          <Link
+            href="/family"
+            className="inline-flex items-center gap-2 self-start justify-self-start rounded-2xl bg-accent px-6 py-3.5 text-lg font-bold whitespace-nowrap text-on-accent transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] lg:self-center"
+          >
+            Set up family alerts
+            <ArrowRightIcon size={18} weight="bold" aria-hidden />
+          </Link>
         </section>
       </main>
       <SiteFooter />

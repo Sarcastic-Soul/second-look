@@ -3,6 +3,7 @@ import type { Message, WebhookEvent } from "agentboxd";
 import { and, count, eq, gt } from "drizzle-orm";
 import { agentboxd, fetchRawMessage, phishingRisk } from "../agentboxd";
 import { db, schema } from "../db";
+import { alertFamily } from "../family";
 import { suspectFromRawEmail, parseSenderLine } from "../ingest/email";
 import { analyse } from "../pipeline";
 import { renderFailureReply, renderHowToReply, renderVerdictReply, type ReplyContent } from "./reply";
@@ -92,7 +93,9 @@ export async function handleInbound(event: WebhookEvent): Promise<InboundOutcome
         totalMs: analysis.timings.total,
       })
       .where(eq(schema.checks.id, row.id));
-    await reply(renderVerdictReply(analysis, reportUrl(row.id)));
+    const url = reportUrl(row.id);
+    const told = await alertFamily(requesterHash, analysis, url);
+    await reply(renderVerdictReply(analysis, url, told ? `We've also let ${told} know, as you asked.` : undefined));
     return { action: "replied", checkId: row.id, kind: "verdict" };
   } catch (e) {
     const error = (e as Error).message.slice(0, 500);

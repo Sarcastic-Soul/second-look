@@ -6,7 +6,8 @@
     "dev": "NODE_OPTIONS=--network-family-autoselection-attempt-timeout=2000 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "bun --env-file=.env scripts/migrate.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
