@@ -49,7 +49,7 @@ export function renderVerdictReply(a: Analysis, reportUrl?: string): ReplyConten
   const heading = (s: string) => `<p style="margin:16px 0 4px;font-weight:600">${esc(s)}</p>`;
 
   const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1f2328;max-width:560px">
-<div style="background:${style.background};border-left:4px solid ${style.colour};padding:12px 16px;margin:0 0 16px">
+<div style="background:${style.background};border:1px solid ${style.colour}33;border-radius:8px;padding:12px 16px;margin:0 0 16px">
 <p style="margin:0;font-size:20px;font-weight:700;color:${style.colour}">${esc(style.label)} <span style="font-size:14px;font-weight:400;color:#57606a">(${confidence}% sure)</span></p>
 <p style="margin:4px 0 0">${esc(v.headline)}</p>
 </div>
