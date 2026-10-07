@@ -14,7 +14,7 @@ if (!inbox) throw new Error("run scripts/setup-inbox.ts first");
 
 const ICON = { pass: "✓", warn: "!", fail: "✗", unknown: "?" } as const;
 
-for (const m of (await mr.messages.list(inbox.id, { limit: count })).data) {
+for (const m of (await mr.messages.list(inbox.id, { limit: count })).data.filter((m) => m.direction === "inbound")) {
   const full = await mr.messages.get(m.id);
   const suspect = await suspectFromRawEmail(await fetchRawMessage(m.id), { agentboxdRisk: phishingRisk(full) });
   const a = await analyse(suspect);
