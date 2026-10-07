@@ -35,28 +35,22 @@ export function defang(s: string): string {
   });
 }
 
-/**
- * Sent as a new email with our own subject, not as a "Re:" reply: repeating the scam's subject line and
- * wording made Gmail file our answers as spam.
- */
+/** Sent as a reply in the person's thread, so it keeps their subject ("Re: ...") and only the body is rendered. */
 export interface ReplyContent {
-  subject: string;
   text: string;
   html: string;
 }
 
 const SAFE_NOTE = "Suspicious website names are written like example[.]com so they can't be clicked by accident.";
 
-export function renderVerdictReply(analysis: Analysis, reportUrl?: string, askedAbout?: string | null): ReplyContent {
+export function renderVerdictReply(analysis: Analysis, reportUrl?: string): ReplyContent {
   const a = defangAnalysis(analysis);
   const v = a.verdict;
   const style = VERDICT_STYLE[v.verdict];
   const confidence = Math.round(v.confidence * 100);
   const shown = a.checks.filter((c) => c.status !== "unknown");
-  const about = askedAbout ? defang(askedAbout.replace(/^(fwd?|fw):\s*/i, "").slice(0, 100)) : null;
 
   const text = [
-    about ? `About the message you sent: "${about}"\n` : "",
     `${style.label.toUpperCase()} (${confidence}% sure)`,
     v.headline,
     a.degraded ? "\nOur AI was unavailable, so this answer comes only from the technical checks." : "",
@@ -75,7 +69,6 @@ export function renderVerdictReply(analysis: Analysis, reportUrl?: string, asked
   const heading = (s: string) => `<p style="margin:16px 0 4px;font-weight:600">${esc(s)}</p>`;
 
   const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1f2328;max-width:560px">
-${about ? `<p style="margin:0 0 12px;font-size:14px;color:#57606a">About the message you sent: "${esc(about)}"</p>` : ""}
 <div style="background:${style.background};border:1px solid ${style.colour}33;border-radius:8px;padding:12px 16px;margin:0 0 16px">
 <p style="margin:0;font-size:20px;font-weight:700;color:${style.colour}">${esc(style.label)} <span style="font-size:14px;font-weight:400;color:#57606a">(${confidence}% sure)</span></p>
 <p style="margin:4px 0 0">${esc(v.headline)}</p>
@@ -89,7 +82,7 @@ ${reportUrl ? `<p><a href="${esc(reportUrl)}" style="color:#0b5cad">See the full
 <p style="margin-top:24px;border-top:1px solid #d0d7de;padding-top:12px;font-size:13px;color:#57606a">${esc(SAFE_NOTE)} ${esc(FOOTER)}</p>
 </div>`;
 
-  return { subject: `Second Look result: ${style.label}`, text, html };
+  return { text, html };
 }
 
 function defangAnalysis(a: Analysis): Analysis {
@@ -118,7 +111,6 @@ const HOW_TO =
 export function renderHowToReply(): ReplyContent {
   const text = `We couldn't find a message to check in your email.\n\n${HOW_TO}\n\n--\n${FOOTER}`;
   return {
-    subject: "How to use Second Look",
     text,
     html: `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1f2328;max-width:560px"><p>We couldn't find a message to check in your email.</p><p>${esc(HOW_TO)}</p><p style="margin-top:24px;font-size:13px;color:#57606a">${esc(FOOTER)}</p></div>`,
   };
@@ -128,7 +120,6 @@ export function renderFailureReply(): ReplyContent {
   const body =
     "Sorry, something went wrong while checking this message, so we can't give you an answer right now. Until you know more, treat it as suspicious: don't click its links, don't reply, and don't share codes or passwords. You can try forwarding it again in a few minutes.";
   return {
-    subject: "Second Look couldn't check your message",
     text: `${body}\n\n--\n${FOOTER}`,
     html: `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1f2328;max-width:560px"><p>${esc(body)}</p><p style="margin-top:24px;font-size:13px;color:#57606a">${esc(FOOTER)}</p></div>`,
   };
