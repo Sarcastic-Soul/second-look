@@ -69,7 +69,7 @@ export async function handleInbound(event: WebhookEvent): Promise<InboundOutcome
   const reply = async (content: ReplyContent) => {
     // Dry run: log the reply instead of sending it, for local testing against real inbox messages.
     if (process.env.DRY_RUN === "1") return void console.log(`[inbound] DRY RUN reply to ${m.id}:\n${content.text}`);
-    await agentboxd().messages.reply(inbox.id, m.id, { text: content.text, html: content.html, labels: ["second-look-reply"] });
+    await agentboxd().messages.send(inbox.id, { to: from, subject: content.subject, text: content.text, html: content.html, labels: ["second-look-reply"] });
   };
 
   try {
@@ -92,7 +92,7 @@ export async function handleInbound(event: WebhookEvent): Promise<InboundOutcome
         totalMs: analysis.timings.total,
       })
       .where(eq(schema.checks.id, row.id));
-    await reply(renderVerdictReply(analysis, reportUrl(row.id)));
+    await reply(renderVerdictReply(analysis, reportUrl(row.id), m.subject));
     return { action: "replied", checkId: row.id, kind: "verdict" };
   } catch (e) {
     const error = (e as Error).message.slice(0, 500);
