@@ -77,9 +77,20 @@ stop are button presses, not link visits, so email apps that open links to scan 
 
 ## Evaluation
 
-See [eval/README.md](eval/README.md) for the dataset and method, and [eval/RESULTS.md](eval/RESULTS.md)
-for the numbers. We compare three setups on scam texts versus ordinary texts from a public SMS phishing
-dataset: checks only, the AI only, and the AI with the checks (what ships).
+80 text messages (40 scams, 40 ordinary) from a public SMS phishing dataset, three setups. Counting
+only a "Scam" answer as a warning:
+
+| Setup | Precision | Recall | Ordinary texts called a scam |
+| --- | --- | --- | --- |
+| Checks only | n/a | 0% | 0 of 40 |
+| AI only | 94% | 85% | 2 of 40 |
+| AI + checks (ships) | 100% | 79% | 0 of 40 |
+
+No scam was ever called "Looks safe" by either AI setup. The weak spot: 40% of ordinary texts got
+"Be careful", mostly short personal messages with no context. On text messages without links the
+checks have little to work with, so this run can't show much difference from adding them. Method,
+limits and the honest details are in [eval/README.md](eval/README.md); every number is in
+[eval/RESULTS.md](eval/RESULTS.md).
 
 ## What works and what doesn't
 
@@ -103,6 +114,9 @@ Doesn't, or only partly:
   answers come from the lighter fallback model, and after both run out the answer comes from the checks
   alone.
 - **Our replies can land in spam**, since the inbox's domain is new.
+- **Too cautious with short personal texts.** In the eval, 40% of ordinary texts got "Be careful".
+- **Some scam texts trip Gemini's safety filter** (sexual content), and then the answer comes from the
+  checks alone.
 - English works best. Other languages get an answer, but the checks' brand list and wording rules are
   English-first.
 - It's advice, not a guarantee. Every reply says so.
