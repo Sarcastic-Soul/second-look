@@ -46,3 +46,6 @@ next-env.d.ts
 
 # eval datasets (download steps in eval/README.md)
 /eval/data
+
+# impeccable design tool
+/.impeccable

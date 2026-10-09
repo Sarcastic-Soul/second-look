@@ -6,7 +6,8 @@
 
 - Live site: https://second-look-sigma.vercel.app
 - Inbox: secondlook@homingbox.net (forward anything to it)
-- Built for ForgeHacks 2026, AI + Cybersecurity track
+- Demo video: https://www.youtube.com/watch?v=5_ewra-4dCY
+- Built for ForgeHacks 2026, AI + Cybersecurity track ([Devpost](https://devpost.com/software/second-look-xm0s2b))
 
 ![Landing page](docs/screenshots/home.png)
 
